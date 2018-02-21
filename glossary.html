@@ -155,13 +155,8 @@ background: #f9f9f9;
         <p>click on <span class="glyphicon glyphicon-ok"></span> to confirm</p>
         <p>click on <span class="glyphicon glyphicon-remove"></span> to cancel</p>
         <p>while adding/editing, click on <button class="btn btn-default">+DEF</button> to add new def</p>
-        <p>no dedicated delete button, to delete a word, simple empty its spelling</p>
+        <p>no dedicated delete button, to delete a word, simply empty its spelling</p>
         </br>
-        <h4>shortcuts</h4>
-        <p>ctrl+opt+a</p>
-        <p>ctrl+opt+e</p>
-        <p>ctrl+opt+y</p>
-        <p>ctrl+opt+n</p>
       </div>
     </div>
   </div>
@@ -295,9 +290,14 @@ function update(ind){
     (i==0?r.slice(2):r).each(function(){
       t.push($(this).html());
     });
-    d[1].push(t);
+    if (t[0] || t[1] || t[2]) d[1].push(t);
   }
-  data_obj[ind] = d;
+
+  if (!d[1].length){
+    data_obj.splice(ind,1);
+  }else{
+    data_obj[ind] = d;
+  }
 }
 
 function add(){
@@ -449,18 +449,19 @@ $('#save_btn').click(function(){
 confirm('overwrite?');
 });
 
+//console.
+///note it's show and hidden.
 $('#help').on('show.bs.modal', function (e) {
   MODE_CONSOLE=true;
 });
 $('#help').on('hidden.bs.modal', function (e) {
   MODE_CONSOLE=false;
 });
+
 document.addEventListener('keyup', function(e){
-  if(e.key=='`' && !MODE_ADD && !MODE_EDIT){
-    $('#help').modal(MODE_CONSOLE?'hide':'show');
-  }
-  else if (MODE_CONSOLE){
+  if (e.key=='`' && !MODE_ADD && !MODE_EDIT){
     console.log(e.key);
+    $('#help').modal(MODE_CONSOLE?'hide':'show');
   }
 });
 
