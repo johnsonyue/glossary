@@ -38,7 +38,7 @@ background: #f9f9f9;
     <!-- page header -->
     <div class="col-md-12">
      <div class="page-header">
-       <h2 id='glossary-header'><span tabindex=0>My Glossary</span></h2>
+       <h2 id='glossary-header'>My Glossary</h2>
      </div>
     </div>
     <!-- end page header -->
@@ -145,9 +145,10 @@ background: #f9f9f9;
         <button type="button" class="close" data-dismiss="modal">
           <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
         </button>
-        <h5 class="modal-title" id="exampleModalLabel">HELP</h5>
+        <h5 class="modal-title" id="exampleModalLabel">CONSOLE</h5>
       </div>
       <div class="modal-body">
+        <h4>help</h4>
         <p>To changes save to disk, click on the <span class="glyphicon glyphicon-floppy-disk"></span></p>
         <p>To add, click on the <span class="glyphicon glyphicon-plus"></span></p>
         <p>To edit, highlight a line, then click on the <span class="glyphicon glyphicon-edit"></span></p>
@@ -155,6 +156,12 @@ background: #f9f9f9;
         <p>click on <span class="glyphicon glyphicon-remove"></span> to cancel</p>
         <p>while adding/editing, click on <button class="btn btn-default">+DEF</button> to add new def</p>
         <p>no dedicated delete button, to delete a word, simple empty its spelling</p>
+        </br>
+        <h4>shortcuts</h4>
+        <p>ctrl+opt+a</p>
+        <p>ctrl+opt+e</p>
+        <p>ctrl+opt+y</p>
+        <p>ctrl+opt+n</p>
       </div>
     </div>
   </div>
@@ -164,6 +171,7 @@ background: #f9f9f9;
 var data_obj;
 var MODE_ADD = false;
 var MODE_EDIT = false;
+var MODE_CONSOLE = false;
 
 var page_size=10, pager_size=10;
 var pager_front=1, pager_active=1;
@@ -273,7 +281,6 @@ function update(ind){
   var d = [];
   var hl = $('.hl');
   
-  ind += (pager_active-1)*page_size;
   var r = hl.eq(0).find('td');
   d[0] = r.eq(1).html();
   if (d[0] == "") {
@@ -309,7 +316,7 @@ function add(){
     (i==0?r.slice(2):r).each(function(){
       t.push($(this).html());
     });
-    if (t[0]!="" && t[1]!="" && t[2]!="") d[1].push(t);
+    d[1].push(t);
   }
 
   if (!d[1].length) return;
@@ -442,8 +449,19 @@ $('#save_btn').click(function(){
 confirm('overwrite?');
 });
 
-$('#glossary-header').keypress(function(){
-$('#help').modal();
+$('#help').on('show.bs.modal', function (e) {
+  MODE_CONSOLE=true;
+});
+$('#help').on('hidden.bs.modal', function (e) {
+  MODE_CONSOLE=false;
+});
+document.addEventListener('keyup', function(e){
+  if(e.key=='`' && !MODE_ADD && !MODE_EDIT){
+    $('#help').modal(MODE_CONSOLE?'hide':'show');
+  }
+  else if (MODE_CONSOLE){
+    console.log(e.key);
+  }
 });
 
 load();
