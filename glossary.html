@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+#edit_btn {
+outline: none;
+}
+#add_btn {
+color: #5cb85c;
+outline: none;
+}
+#yes_btn {
+color: #428bca;
+outline: none;
+}
+#no_btn {
+color: #d9534f;
+outline: none;
+}
+.add-row td {
+outline: none;
+}
+.hl {
+background: #f9f9f9;
+}
+</style>
+</head>
+<body>
+<script src="bootstrap-3.3.7-dist/js/jquery.min.js"></script>
+<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<div class="container-fluid">
+  <div class="row">
+  <!-- col-md-12 -->
+  <div class="col-md-12">
+
+    <!-- page header -->
+    <div class="col-md-12">
+     <div class="page-header">
+       <h2 id='glossary-header'><span tabindex=0>My Glossary</span></h2>
+     </div>
+    </div>
+    <!-- end page header -->
+
+    <!-- search -->
+    <div class="form-inline form-group">
+      <button type="submit" class="form-control"><span class="glyphicon glyphicon-search"></span></button>
+      <input type="text" class="form-control" placeholder="spelling">
+      <button id="save_btn" type="submit" class="form-control pull-right"><span class="glyphicon glyphicon-floppy-disk"></button>
+    </div>
+    <!-- end search -->
+
+    <!-- table -->
+    <table class='table table-bordered' id='tbl'>
+    <thead>
+    <tr>
+      <th class="text-center" style="vertical-align: middle;" rowspan='2'>#</th>
+      <th class="text-center" style="vertical-align: middle;" rowspan='2'>SPELLING&nbsp<span style="cursor: pointer;" class="glyphicon glyphicon-chevron-up"></span><span style="cursor: pointer; display: none;" class="glyphicon glyphicon-chevron-down"></span></th>
+      <th class="text-center" colspan='3'>DEFINITIONS</th>
+    </tr>
+    <tr>
+      <th>PART</th>
+      <th>EE</th>
+      <th>EC</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    </table>
+    <!-- end table -->
+
+    <!-- inline buttons -->
+    <div class="form-inline form-group">
+      <button id="edit_btn" disabled="disabled" class="btn btn-default form-control pull-right"><span class="glyphicon glyphicon-edit"></span></button>
+      <button id="add_btn" class="btn btn-default form-control pull-right"><span class="glyphicon glyphicon-plus"></span></button>
+      <button id="yes_btn" class="btn btn-default form-control pull-right" style="display: none;"><span class="glyphicon glyphicon-ok"></span></button>
+      <button id="no_btn" class="btn btn-default form-control pull-right" style="display: none;"><span class="glyphicon glyphicon-remove"></span></button>
+      <button id="new_btn" class="btn btn-default form-control" style="outline: none; display: none;">+DEF</button>
+    </div>
+    <!-- end inline buttons -->
+
+  </div> <!-- col-md-12 -->
+  </div> <!-- row -->
+
+
+  <!------------------------------------------------------ new row ------------------------------------------------------>
+
+
+  <div class="row">
+  <!-- col-md-12 -->
+  <div class="col-md-12">
+
+    <!-- page header -->
+    <div class="col-md-12">
+     <div class="page-header">
+       <h2>Relation</h2>
+     </div>
+    </div>
+    <!-- end page header -->
+
+  </div> <!-- col-md-12 -->
+  </div> <!-- row -->
+</div>
+
+  <!------------------------------------------------------ new row ------------------------------------------------------>
+
+<!-- Modal -->
+<div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h5 class="modal-title" id="exampleModalLabel">HELP</h5>
+      </div>
+      <div class="modal-body">
+        <p>To changes save to disk, click on the <span class="glyphicon glyphicon-floppy-disk"></span></p>
+        <p>To add, click on the <span class="glyphicon glyphicon-plus"></span></p>
+        <p>To edit, highlight a line, then click on the <span class="glyphicon glyphicon-edit"></span></p>
+        <p>click on <span class="glyphicon glyphicon-ok"></span> to confirm</p>
+        <p>click on <span class="glyphicon glyphicon-remove"></span> to cancel</p>
+        <p>while adding/editing, click on <button class="btn btn-default">+DEF</button> to add new def</p>
+        <p>no dedicated delete button, to delete a word, simple empty its spelling</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+function load(){
+$.ajax("db/db.json", {
+  type: 'GET',
+  async: false,
+  success: function(d){
+    data_obj = d;
+    console.log(data_obj);
+    //fill(d);
+  },
+  error: function (jqXhr, textStatus, errorMessage) {console.log('Error' + errorMessage);}
+});
+}
+
+function fill(d){
+$('#tbl tbody').html('');
+
+d.forEach(function(i,ind){
+  $('#tbl tbody').append('<tr></tr>');
+
+  var row = $('#tbl tbody tr:last');
+  row.attr('index',ind);
+  row.append('<td class="text-center" rowspan='+i[1].length+'>'+ind+'</td>');
+  row.append('<td rowspan='+i[1].length+'>'+i[0]+'</td>');
+  row.append('<td>'+i[1][0][0]+'</td>');
+  row.append('<td>'+i[1][0][1]+'</td>');
+  row.append('<td>'+i[1][0][2]+'</td>');
+
+  for (var j=1; j<i[1].length; j++){
+    $('#tbl tbody').append('<tr></tr>');
+
+    var subrow = $('#tbl tbody tr:last');
+    subrow.attr('index',ind);
+    subrow.append('<td>'+i[1][j][0]+'</td>');
+    subrow.append('<td>'+i[1][j][1]+'</td>');
+    subrow.append('<td>'+i[1][j][2]+'</td>');
+  }
+});
+
+  $('#tbl tbody tr').click(function(){if (!MODE_EDIT){
+    var index = $(this).attr('index');
+    if ($(this).hasClass('hl')){
+      $('#tbl tbody tr[index='+ index +']').removeClass('hl');
+      $('#edit_btn').prop('disabled',true);
+    }else{
+      $('#tbl tbody tr').removeClass('hl');
+      $('#tbl tbody tr[index='+ index +']').addClass('hl');
+      $('#edit_btn').prop('disabled',false);
+    }
+  }});
+}
+
+function edit_new_def(){
+  var hl = $('.hl');
+  var r = $('.hl').eq(0).find('td');
+  var rowspan = r.eq(0).attr("rowspan");
+  r.eq(0).attr("rowspan", parseInt(rowspan) + 1);
+  r.eq(1).attr("rowspan", parseInt(rowspan) + 1);
+
+  hl.last().after('<tr class="hl"></tr>');
+  hl = $('.hl');
+  hl.last().append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  hl.last().append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  hl.last().append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+}
+
+function add_new_def(){
+  var ar = $('.add-row');
+  var r = $('.add-row').eq(0).find('td');
+  var rowspan = r.eq(0).attr("rowspan");
+  r.eq(0).attr("rowspan", parseInt(rowspan) + 1);
+  r.eq(1).attr("rowspan", parseInt(rowspan) + 1);
+
+  ar.last().after('<tr class="add-row"></tr>');
+  ar = $('.add-row');
+  ar.last().append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  ar.last().append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  ar.last().append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+}
+
+function update(ind){
+  var d = [];
+  var hl = $('.hl');
+  
+  var r = hl.eq(0).find('td');
+  d[0] = r.eq(1).html();
+  if (d[0] == "") {
+    data_obj.splice(ind,1);
+    return;
+  }
+  d.push([]);
+
+  for (var i=0; i<hl.length; i++){
+    var r = hl.eq(i).find('td');
+    var t = [];
+    (i==0?r.slice(2):r).each(function(){
+      t.push($(this).html());
+    });
+    if (t[0]!="" && t[1]!="" && t[2]!="") d[1].push(t);
+  }
+  data_obj[ind] = d;
+}
+
+function add(){
+  var d = [];
+  var ar = $('.add-row');
+  
+  var r = ar.eq(0).find('td');
+  d[0] = r.eq(1).html();
+  if (d[0] == "") return;
+  
+  d.push([]);
+
+  for (var i=0; i<ar.length; i++){
+    var r = ar.eq(i).find('td');
+    var t = [];
+    (i==0?r.slice(2):r).each(function(){
+      t.push($(this).html());
+    });
+    if (t[0]!="" && t[1]!="" && t[2]!="") d[1].push(t);
+  }
+
+  if (!d[1].length) return;
+  for (var i in data_obj) if(data_obj[i][0]==d[0]){
+    return;
+  }
+  data_obj.push(d);
+}
+
+var data_obj;
+var MODE_ADD = false;
+var MODE_EDIT = false;
+
+$('#add_btn').click(function(){
+  $('#yes_btn').css('display','block');
+  $('#no_btn').css('display','block');
+  $('#new_btn').css('display','block');
+  $('#edit_btn').css('display','none');
+  $('#add_btn').css('display','none');
+
+  $('#tbl tbody').append('<tr class="pad" style="height: 10px;"></tr>');
+  $('#tbl tbody').append('<tr class="add-row"></tr>');
+  $('#tbl .add-row').append('<td rowspan="1"></td>');
+  $('#tbl .add-row').append('<td rowspan="1" contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  $('#tbl .add-row').append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  $('#tbl .add-row').append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  $('#tbl .add-row').append('<td contenteditable="true" style="outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;"></td>');
+  
+  $('#new_btn').prop('disabled',false);
+  MODE_ADD = true;
+});
+
+$('#edit_btn').click(function(){
+  $('#yes_btn').css('display','block');
+  $('#no_btn').css('display','block');
+  $('#new_btn').css('display','block');
+  $('#edit_btn').css('display','none');
+  $('#add_btn').css('display','none');
+  
+  $('.hl td').attr('contenteditable','true');
+  $('.hl td').attr('style','outline: none; border-color: #9ecaed; box-shadow: 0 0 2px #9ecaed;');
+
+  $('#new_btn').prop('disabled',false);
+  MODE_EDIT = true;
+});
+
+$('#new_btn').click(function(){
+  if(MODE_ADD){
+    add_new_def();
+  }else if(MODE_EDIT){
+    edit_new_def();
+  }
+});
+
+$('#yes_btn').click(function(){
+  $('#yes_btn').css('display','none');
+  $('#no_btn').css('display','none');
+  $('#new_btn').css('display','none');
+  $('#add_btn').css('display','block');
+  $('#edit_btn').css('display','block');
+  if(MODE_ADD){
+    var edit_row = $('#tbl tbody tr:last');
+
+    add();
+    fill(data_obj);
+    $('.add-row').remove();
+    $('.pad').remove();
+    $('#new_btn').prop('disabled',true);
+    MODE_ADD = false;
+  }else if(MODE_EDIT){
+    $('.hl td').attr('contenteditable','false');
+    $('.hl td').attr('style','');
+    var ind = $('.hl').attr('index');
+    update(ind);
+    fill(data_obj);
+
+    $('#new_btn').prop('disabled',true);
+    $('#edit_btn').prop('disabled',true);
+    MODE_EDIT = false;
+  }
+});
+
+$('#no_btn').click(function(){
+  $('#yes_btn').css('display','none');
+  $('#no_btn').css('display','none');
+  $('#new_btn').css('display','none');
+  $('#add_btn').css('display','block');
+  $('#edit_btn').css('display','block');
+  if(MODE_ADD){
+    $('.add-row').remove();
+    $('.pad').remove();
+    $('#new_btn').prop('disabled',true);
+    $('#edit_btn').prop('disabled',true);
+    MODE_ADD = false;
+  }else if(MODE_EDIT){
+    $('.hl td').attr('contenteditable','false');
+    $('.hl td').attr('style','');
+    var ind = $('.hl').attr('index');
+    fill(data_obj);
+
+    $('#new_btn').prop('disabled',true);
+    MODE_EDIT = false;
+  }
+});
+
+$('#save_btn').click(function(){
+confirm('overwrite?');
+});
+
+$('#glossary-header').keypress(function(){
+$('#help').modal();
+});
+
+load();
+</script>
+</body>
+</html>
